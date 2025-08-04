@@ -10,7 +10,6 @@ nunjucks.configure({ autoescape: true, trimBlocks: true, lstripBlocks: true })
 // From https://github.com/toniov/p-iteration/blob/master/lib/static-methods.js - MIT © Antonio V
 export async function forEach(array, callback) {
 	for (let index = 0; index < array.length; index++) {
-		// eslint-disable-next-line callback-return
 		await callback(array[index], index, array)
 	}
 }
@@ -93,7 +92,7 @@ export async function copy(src, dest, isDirectory, file) {
 				filePath = file
 			} else {
 				// File item is a file
-				filePath = file.split('\/').slice(0, -1).join('/') + '/'
+				filePath = file.split('/').slice(0, -1).join('/') + '/'
 			}
 
 			if (exclude.includes(filePath)) {

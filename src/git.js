@@ -73,7 +73,6 @@ export default class Git {
 			forkUrl.pathname = `${ FORK }/${ this.repo.name }.git`
 			await this.createFork()
 			await this.createRemote(forkUrl.toString())
-
 		}
 	}
 
@@ -122,7 +121,7 @@ export default class Git {
 
 	async getBaseBranch() {
 		this.baseBranch = await execCmd(
-			`git rev-parse --abbrev-ref HEAD`,
+			'git rev-parse --abbrev-ref HEAD',
 			this.workingDir
 		)
 	}
@@ -201,7 +200,7 @@ export default class Git {
 
 	async getLastCommitSha() {
 		this.lastCommitSha = await execCmd(
-			`git rev-parse HEAD`,
+			'git rev-parse HEAD',
 			this.workingDir
 		)
 	}
@@ -216,7 +215,7 @@ export default class Git {
 
 	async hasChanges() {
 		const statusOutput = await execCmd(
-			`git status --porcelain`,
+			'git status --porcelain',
 			this.workingDir
 		)
 
@@ -304,7 +303,7 @@ export default class Git {
 	// Gets the commit list in chronological order
 	async getCommitsToPush() {
 		const output = await execCmd(
-			`git log --format=%H --reverse ${ SKIP_PR === false ? `` : `origin/` }${ this.baseBranch }..HEAD`,
+			`git log --format=%H --reverse ${ SKIP_PR === false ? '' : 'origin/' }${ this.baseBranch }..HEAD`,
 			this.workingDir
 		)
 
@@ -321,7 +320,7 @@ export default class Git {
 
 	// A wrapper for running all the flow to generate all the pending commits using the GitHub API
 	async createGithubVerifiedCommits() {
-		core.debug(`Creating Commits using GitHub API`)
+		core.debug('Creating Commits using GitHub API')
 		const commits = await this.getCommitsToPush()
 
 		if (SKIP_PR === false) {
@@ -353,12 +352,12 @@ export default class Git {
 			sha: this.lastCommitSha,
 			force: true
 		})
-		core.debug(`Commit using GitHub API completed`)
+		core.debug('Commit using GitHub API completed')
 	}
 
 	async status() {
 		return execCmd(
-			`git status`,
+			'git status',
 			this.workingDir
 		)
 	}
@@ -428,7 +427,7 @@ export default class Git {
 		`)
 
 		if (this.existingPr) {
-			core.info(`Overwriting existing PR`)
+			core.info('Overwriting existing PR')
 
 			const { data } = await this.github.pulls.update({
 				owner: this.repo.user,
@@ -441,7 +440,7 @@ export default class Git {
 			return data
 		}
 
-		core.info(`Creating new PR`)
+		core.info('Creating new PR')
 
 		const { data } = await this.github.pulls.create({
 			owner: this.repo.user,
@@ -501,12 +500,12 @@ export default class Git {
 		])
 
 		const treeDiff = await this.getTreeDiff(treeId, parentTreeId)
-		core.debug(`Uploading the blobs to GitHub`)
+		core.debug('Uploading the blobs to GitHub')
 		const blobsToCreate = treeDiff
 			.filter((e) => e.newMode !== '000000') // Do not upload the blob if it is being removed
 
 		await Promise.all(blobsToCreate.map((e) => this.uploadGitHubBlob(e.newBlob)))
-		core.debug(`Creating a GitHub tree`)
+		core.debug('Creating a GitHub tree')
 		const tree = treeDiff.map((e) => {
 			if (e.newMode === '000000') { // Set the sha to null to remove the file
 				e.newMode = e.previousMode
@@ -537,7 +536,7 @@ export default class Git {
 			throw error
 		}
 
-		core.debug(`Creating a commit for the GitHub tree`)
+		core.debug('Creating a commit for the GitHub tree')
 		const request = await this.github.git.createCommit({
 			owner: this.repo.user,
 			repo: this.repo.name,

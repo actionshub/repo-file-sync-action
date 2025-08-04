@@ -32,7 +32,7 @@ async function run() {
 	const prUrls = []
 
 	await forEach(repos, async (item) => {
-		core.info(`Repository Info`)
+		core.info('Repository Info')
 		core.info(`Slug		: ${ item.repo.name }`)
 		core.info(`Owner		: ${ item.repo.user }`)
 		core.info(`Https Url	: https://${ item.repo.fullName }`)
@@ -55,7 +55,7 @@ async function run() {
 				}
 			}
 
-			core.info(`Locally syncing file(s) between source and target repository`)
+			core.info('Locally syncing file(s) between source and target repository')
 			const modified = []
 
 			// Loop through all selected files of the source repo
@@ -66,13 +66,13 @@ async function run() {
 				const localDestination = `${ git.workingDir }/${ file.dest }`
 
 				const destExists = fs.existsSync(localDestination)
-				if (destExists === true && file.replace === false) return core.warning(`File(s) already exist(s) in destination and 'replace' option is set to false`)
+				if (destExists === true && file.replace === false) return core.warning('File(s) already exist(s) in destination and \'replace\' option is set to false')
 
 				const isDirectory = await pathIsDirectory(file.source)
 				const source = isDirectory ? `${ addTrailingSlash(file.source) }` : file.source
 				const dest = isDirectory ? `${ addTrailingSlash(localDestination) }` : localDestination
 
-				if (isDirectory) core.info(`Source is directory`)
+				if (isDirectory) core.info('Source is directory')
 
 				await copy(source, dest, isDirectory, file)
 
@@ -136,7 +136,7 @@ async function run() {
 
 			// If there are still local changes left (i.e. not committed each file separately), commit them before pushing
 			if (hasChanges === true) {
-				core.debug(`Creating commit for remaining files`)
+				core.debug('Creating commit for remaining files')
 
 				let useOriginalCommitMessage = ORIGINAL_MESSAGE && git.isOneCommitPush()
 				if (useOriginalCommitMessage) {
@@ -154,7 +154,7 @@ async function run() {
 				})
 			}
 
-			core.info(`Pushing changes to target repository`)
+			core.info('Pushing changes to target repository')
 			await git.push()
 
 			if (SKIP_PR === false) {
